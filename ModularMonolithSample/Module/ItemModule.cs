@@ -12,18 +12,16 @@ namespace ModularMonolithSample.Module
 {
     public class ItemModule : Nancy.NancyModule
     {
-        private IItemService _service = new ItemService();
-
-        public ItemModule()
+        public ItemModule(IItemService service)
         {
             Get["/item/"] = _ =>
             {
-                return Response.AsJson(_service.GetItems());
+                return Response.AsJson(service.GetItems());
             };
 
             Get["/item/{id:int}"] = item =>
             {
-                return _service.GetItem(item.id);
+                return service.GetItem(item.id);
             };
 
             Post["/item/"] = item =>
@@ -33,10 +31,10 @@ namespace ModularMonolithSample.Module
                 if (string.IsNullOrEmpty(dto.Name))
                     return HttpStatusCode.BadRequest;
 
-                if (!_service.IsItemNameUnique(dto.Name))
+                if (!service.IsItemNameUnique(dto.Name))
                     return HttpStatusCode.Conflict;
 
-                _service.InsertItem(dto);
+                service.InsertItem(dto);
 
                 return HttpStatusCode.OK;
             };
